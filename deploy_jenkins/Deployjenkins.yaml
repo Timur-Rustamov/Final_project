@@ -1,0 +1,107 @@
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jenkins-pvc
+  namespace: jenkins
+spec:
+  resources:
+    requests:
+      storage: 20Gi
+  storageClassName: ""
+  accessModes:
+  - ReadWriteOnce
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  namespace: jenkins
+spec:
+  type: NodePort
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30500
+  selector:
+    app: jenkins
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins-agent
+  namespace: jenkins
+spec:
+  type: ClusterIP
+  ports:
+  - name: agent
+    port: 50000
+    targetPort: 50000
+  - name: jenkins-ingress
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: jenkins
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  namespace: jenkins
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkins
+  template:
+    metadata:
+      labels:
+        app: jenkins
+    spec:
+      containers:
+      - name: jenkins
+        image: tr94/jenkins:3.0
+        livenessProbe:
+          httpGet:
+            path: /login
+            port: 8080
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /login
+            port: 8080
+          initialDelaySeconds: 60
+          timeoutSeconds: 5
+        resources: 
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+          limits:
+            memory: "2000Mi"
+            cpu: "1500m"
+        ports:
+        - containerPort: 8080
+        - containerPort: 50000
+        volumeMounts:
+        - name: jenkins-pvc
+          mountPath: /var/jenkins_home
+        - name: jenkins-conf
+          mountPath: /var/jenkins_home/casc_configs
+      - name: nginx
+        image: nginx:alpine
+        volumeMounts:
+        - name: nginx-conf
+          mountPath: /etc/nginx/conf.d
+        ports:
+        - containerPort: 80
+      volumes:
+      - name: jenkins-pvc
+        persistentVolumeClaim:
+          claimName: jenkins-pvc
+      - name: nginx-conf
+        configMap: 
+          name: nginx-conf
+      - name: jenkins-conf
+        configMap:
+          name: jenkins-conf

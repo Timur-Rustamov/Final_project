@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tcp-services
+  namespace: ingress-nginx
+data: 
+  8080: "jenkins/jenkins-agent:8080"
+  3000: "monitoring/monitoring-grafana:80"
+  9090: "monitoring/monitoring-kube-prometheus-prometheus:9090"
+  9093: "monitoring/monitoring-kube-prometheus-alertmanager:9093"
+  10000: "python-app/pythonappnodeportservice:8080"

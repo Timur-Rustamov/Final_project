@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  .dockerconfigjson: eyJhdXRocyI6eyJodHRwczovL2luZGV4LmRvY2tlci5pby92MS8iOnsidXNlcm5hbWUiOiJ0cjk0IiwicGFzc3dvcmQiOiJlMWQwZDM0Ny1lOTIxLTQ4NzAtYmY0Yi05MDBjMzZmYzlkYTIiLCJlbWFpbCI6InRzaW15ci5ydXN0YW1vdkBnbWFpbC5jb20iLCJhdXRoIjoiZEhJNU5EcGxNV1F3WkRNME55MWxPVEl4TFRRNE56QXRZbVkwWWkwNU1EQmpNelptWXpsa1lUST0ifX19
+kind: Secret
+metadata:
+  creationTimestamp: "2021-12-05T14:01:39Z"
+  name: dockercred
+  namespace: jenkins
+  resourceVersion: "1057"
+  selfLink: /api/v1/namespaces/jenkins/secrets/dockercred
+  uid: c1286c49-df54-4f9d-aee8-bae6e730ec9f
+type: kubernetes.io/dockerconfigjson
